@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div>
+        <input id="username" type="text" placeholder="Enter the username"/>
+        <input id="email" type="email" placeholder="Enter the email" />
+        <input id="password" type="password" placeholder="Enter the password" />
+        <button id="submit" >Submit</button>
+    </div>
+</body>
+<script >
+    const usernameInput = document.getElementById("username");
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const submit = document.getElementById("submit")
+    async function registerUser(){
+        try{
+            const obj={
+                username:usernameInput.value,
+                emailInput:emailInput.value,
+                passwordInput:passwordInput.value,
+            }
+            const res = await fetch('https://stormy-ox-gilet.cyclic.app/users/register',{
+                method:"POST",
+                headers:{
+                    "Content-type":"application/json"
+                },
+                body:JSON.stringify(obj)
+            })
+            const data = await res.json();
+            console.log(data)
+        }
+        catch(err){
+            console.log("err",err)
+        }
+    }
+    submit.addEventListener("click",registerUser)
+</script>
+</html>
