@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Notes</h1>
+    <input id="title" placeholder="Enter the title"/>
+    <input id="body" placeholder="Enter the body"/>
+    <button id="submit">Add notes</button>
+    <h1>List of all notes</h1>
+    <div id="container"></div>
+</body>
+<script>
+    const titleInput = document.getElementById("title");
+    const bodyInput = document.getElementById("body");
+    const submit = document.getElementById("submit");
+    const container = document.getElementById("container")
+    async function addNotes(){
+        try{
+            const obj={
+                title:titleInput.value,
+                body:bodyInput.value,
+            }
+            const res = await fetch('https://stormy-ox-gilet.cyclic.app/notes',{
+                method:"POST",
+                headers:{
+                    "Content-Type":"application/json"
+                },
+                body:JSON.stringify(obj)
+            })
+            const data = await res.json();
+            console.log(data);
+        }
+        catch(err){
+            console.log(err);
+        }
+    }
+
+    async function fetchNotes(){
+        try{
+            const token =localStorage.getItem("token")
+            console.log(token);
+            const res = await fetch('https://stormy-ox-gilet.cyclic.app/notes',{
+                headers:{
+                    "Authorization":`Bearer ${token}`
+                }
+            })
+            const data = await res.json();
+            console.log(data);
+            appendData(data.notes)
+
+        }
+        catch(err){
+            console.log(err);
+        }
+    }
+    fetchNotes()
+    submit.addEventListener("click",fetchNotes)
+
+    function createCard(item){
+        const cont = document.createElement("div");
+
+        const title = document.createElement("div");
+        title.innerText=item.title
+
+        const body = document.createElement("div");
+        body.innerText=item.body
+
+        const edit = document.createElement("button");
+        edit.innerText="Edit"
+
+        const del = document.createElement("button");
+        del.innerText="Delete";
+
+        del.addEventListener("click",()=>{
+            deleteNotes(item._id)
+        })
+
+        cont.append(title,body,edit,del)
+        return cont
+    }
+
+    async function deleteNotes(id){
+        try{
+            const token =localStorage.getItem("token")
+            const res = await fetch(`https://stormy-ox-gilet.cyclic.app/notes/${id}`,{
+                method:"DELETE",
+                headers:{
+                    "Authorization":`Bearer ${token}`
+                }
+            })
+            const data = await res.json();
+            console.log(data);
+            fetchNotes()
+        }
+        catch(err){
+            console.log(err);
+        }
+    }
+
+    function appendData(data){
+        container.innerHTML=""
+        data.forEach(element => {
+            container.append(createCard(element))
+        });
+    }
+</script>
+</html>
