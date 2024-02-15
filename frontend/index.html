@@ -23,8 +23,8 @@
         try{
             const obj={
                 username:usernameInput.value,
-                email:emailInput.value,
-                pass:passwordInput.value,
+                email:emailInput.value?emailInput.value:null,
+                pass:passwordInput.value?passwordInput.value:null,
             }
             const res = await fetch('https://stormy-ox-gilet.cyclic.app/users/register',{
                 method:"POST",
@@ -35,12 +35,11 @@
             })
             const data = await res.json();
             console.log(data);
-            
+            window.location.href="./login.html"
         }
         catch(err){
             console.log("err",err.message)
         }
-        window.location.href="./login.html"
     }
     submit.addEventListener("click",registerUser)
 </script>
