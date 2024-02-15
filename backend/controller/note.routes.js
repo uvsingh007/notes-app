@@ -39,7 +39,7 @@ noteRouter.patch("/:noteID",auth,  async (req, res) => {
     }
 });
 
-noteRouter.delete("/:noteID", async (req, res) => {
+noteRouter.delete("/:noteID", auth,async (req, res) => {
     const {noteID} = req.params
     try{
         const note = await NoteModel.findOne({_id: noteID});
