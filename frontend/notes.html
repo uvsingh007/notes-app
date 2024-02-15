@@ -10,6 +10,11 @@
     <input id="title" placeholder="Enter the title"/>
     <input id="body" placeholder="Enter the body"/>
     <button id="submit">Add notes</button>
+    <h1>Edit notes</h1>
+    <input id="id" placeholder="Enter the id"/>
+    <input id="titleEdit" placeholder="Enter the title"/>
+    <input id="bodyEdit" placeholder="Enter the body"/>
+    <button id="submitEdit">Edit notes</button>
     <h1>List of all notes</h1>
     <div id="container"></div>
 </body>
@@ -18,6 +23,10 @@
     const bodyInput = document.getElementById("body");
     const submit = document.getElementById("submit");
     const container = document.getElementById("container")
+    const idEdit = document.getElementById("id")
+    const titleInputEdit = document.getElementById("titleEdit");
+    const bodyInputEdit = document.getElementById("bodyEdit");
+    const submitEdit = document.getElementById("submitEdit");
     async function addNotes(){
         try{
             const obj={
@@ -42,7 +51,7 @@
     async function fetchNotes(){
         try{
             const token =localStorage.getItem("token")
-            console.log(token);
+            // console.log(token);
             const res = await fetch('https://stormy-ox-gilet.cyclic.app/notes',{
                 headers:{
                     "Authorization":`Bearer ${token}`
@@ -63,7 +72,7 @@
     function createCard(item){
         const cont = document.createElement("div");
 
-        const title = document.createElement("div");
+        const title = document.createElement("h3");
         title.innerText=item.title
 
         const body = document.createElement("div");
@@ -71,6 +80,12 @@
 
         const edit = document.createElement("button");
         edit.innerText="Edit"
+
+        edit.addEventListener("click",()=>{
+            idEdit.value=item._id
+            titleInputEdit.value=item.title;
+            bodyInputEdit.value=item.body;
+        })
 
         const del = document.createElement("button");
         del.innerText="Delete";
@@ -107,5 +122,59 @@
             container.append(createCard(element))
         });
     }
+
+    async function addUser(){
+        try{
+            const obj={
+                title:titleInput.value,
+                body:bodyInput.value,
+            }
+            const token =localStorage.getItem("token")
+            const res = await fetch('https://stormy-ox-gilet.cyclic.app/notes',{
+                method:"POST",
+                headers:{
+                    "Content-Type":"application/json",
+                    "Authorization":`Bearer ${token}`
+                },
+                body:JSON.stringify(obj)
+            })
+            const data = await res.json();
+            console.log(data)
+            fetchNotes()
+        }
+        catch(err){
+            console.log(err);
+        }
+    }
+
+    submit.addEventListener("click",addUser)
+
+
+    async function updateNotes(id){
+        try{
+            const obj={
+                title:titleInputEdit.value,
+                body:bodyInputEdit.value,
+            }
+            const token =localStorage.getItem("token")
+            console.log(idEdit.value);
+            const res = await fetch(`https://stormy-ox-gilet.cyclic.app/notes/${idEdit.value}`,{
+                method:"PATCH",
+                headers:{
+                    "Content-Type":"application/json",
+                    "Authorization":`Bearer ${token}`
+                },
+                body:JSON.stringify(obj)
+            })
+            const data = await res.json();
+            console.log(data);
+            fetchNotes()
+        }
+        catch(err){
+            console.log(err);
+        }
+    }
+
+    submitEdit.addEventListener("click",updateNotes)
 </script>
 </html>
